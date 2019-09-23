@@ -23,29 +23,33 @@ function ContactForm({
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [values, setValues] = useState({ id: null, name: "", phone: "" });
+  const [values, setValues] = useState(editingValues);
   const [errors, setErrors] = useState({ nameError: false, phoneError: false });
 
+
   useEffect(() => {
-    setValues({ ...editingValues });
-  }, [editingValues]);
-  useEffect(() => {
-    formValidation();
+    formValidation(values === editingValues);
+    console.log(values.name);
   }, [values]);
 
   const handleChange = item => {
     setValues({ ...values, [item.target.name]: item.target.value });
   };
+  const clearErr = () => {setErrors({ nameError: false, phoneError: false })}
 
-  const formValidation = () => {
+  const formValidation = (isFirstTime) => {
     const { name, phone } = values;
-    setErrors({ nameError: false, phoneError: false });
-    if (name.slice(-1) === " " || name.length < 3) {
-      setErrors({ ...errors, nameError: true });
-    }
+    console.log(isFirstTime, values, editingValues);
+    clearErr()
+    if(!isFirstTime){
+      if (name.slice(-1) === " " || name.length === 0) {
+        setErrors({ ...errors, nameError: true });
+      }
     if (phone.slice(-1) === " " || phone.length === 0) {
       setErrors({ ...errors, phoneError: true });
     }
+  }
+
   };
 
   const createNewItem = () => {
@@ -70,23 +74,24 @@ function ContactForm({
         <TextField
           error={errors.nameError}
           helperText={errors.nameError && "Please fill this field correctly"}
-          autoFocus
           margin="dense"
           name="name"
           label="Name*"
           variant="outlined"
           fullWidth
+          autoFocus
           onChange={handleChange}
-          onBlur={formValidation}
           defaultValue={name}
+          onBlur={() => formValidation(false)}
+          onFocus={clearErr}
         />
         <InputMask
           mask="(999) 999-9999"
           maskChar=" "
           defaultValue={phone}
           onChange={handleChange}
-          onBlur={formValidation}
-          required
+          onBlur={() => formValidation(false)}
+          onFocus={clearErr}
         >
           {() => (
             <TextField
@@ -96,10 +101,8 @@ function ContactForm({
               name="phone"
               label="Phone number*"
               variant="outlined"
-              type="tel"
               fullWidth
               defaultValue={phone}
-              onBlur={formValidation}
             />
           )}
         </InputMask>
