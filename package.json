@@ -7,6 +7,7 @@
   "dependencies": {
     "@material-ui/core": "4.4.2",
     "@material-ui/styles": "4.4.1",
+    "firebase": "^6.6.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-input-mask": "^2.0.4",
@@ -30,5 +31,13 @@
     "not op_mini all"
   ],
   "author": "NastjaWEB",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NastiaWEB/ContactsApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NastiaWEB/ContactsApp/issues"
+  },
+  "homepage": "https://github.com/NastiaWEB/ContactsApp#readme"
 }

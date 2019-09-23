@@ -3,9 +3,8 @@ export const toggleDialog = dialogType => ({
   payload: dialogType
 });
 
-export const getContacts = contact => ({
-  type: "GET_CONTACTS",
-  payload: contact
+export const getContacts = () => ({
+  type: "GET_CONTACTS"
 });
 export const deleteItem = item => ({
   type: "DELETE_CONTACT",

@@ -1,7 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import InputMask from "react-input-mask";
+
+
+
 import {
   Dialog,
   DialogTitle,
@@ -19,79 +23,82 @@ function ContactForm({
   onEdit,
   addItem
 }) {
-  const { id, name, phone } = editingValues;
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [values, setValues] = useState(editingValues);
+  const [values, setValues] = useState({});
   const [errors, setErrors] = useState({ nameError: false, phoneError: false });
 
-
   useEffect(() => {
-    formValidation(values === editingValues);
-    console.log(values.name);
-  }, [values]);
+    setValues({ ...editingValues });
+  }, [editingValues]);
 
-  const handleChange = item => {
-    setValues({ ...values, [item.target.name]: item.target.value });
+  const handleChange = e => {
+    setValues({ ...values, [e.target.name]: e.target.value });
   };
-  const clearErr = () => {setErrors({ nameError: false, phoneError: false })}
 
-  const formValidation = (isFirstTime) => {
-    const { name, phone } = values;
-    console.log(isFirstTime, values, editingValues);
-    clearErr()
-    if(!isFirstTime){
-      if (name.slice(-1) === " " || name.length === 0) {
-        setErrors({ ...errors, nameError: true });
-      }
-    if (phone.slice(-1) === " " || phone.length === 0) {
-      setErrors({ ...errors, phoneError: true });
+  const clearErr = err => {
+    setErrors({ ...errors, [err]: false });
+  };
+
+  const formValidation = (field, err) => {
+    if (field.slice(-1) === " " || field.length === 0) {
+      setErrors({ ...errors, [err]: true });
     }
-  }
-
   };
 
-  const createNewItem = () => {
+  const createNewContact = () => {
     const newId = `f${(~~(Math.random() * 1e8)).toString(16)}`;
-    addItem({ newId, ...values, phone: `+380 ${values.phone}` });
+    addItem({ id: newId, ...values });
+  };
+  const editContact = () => {
+    if (
+      editingValues.name !== values.name ||
+      editingValues.phone !== values.phone
+    ) {
+      onEdit(values);
+    }
   };
 
   const handleSubmit = () => {
-    formValidation();
     const isValid = !(errors.nameError || errors.phoneError);
     if (isValid) {
-      return isEditing ? onEdit({ id, ...values }) : createNewItem();
+      return isEditing ? editContact() : createNewContact();
     }
+  };
+  const handleClose = () => {
+    setErrors({ nameError: false, phoneError: false });
+    onClose();
   };
 
   return (
-    <Dialog open={open} fullWidth fullScreen={fullScreen} onClose={onClose}>
+    <Dialog open={open} fullWidth fullScreen={fullScreen} onClose={handleClose}>
       <DialogTitle>
         {isEditing ? "Edit contact" : "Create new contact"}
       </DialogTitle>
       <DialogContent>
         <TextField
+          fullWidth
+          autoFocus
           error={errors.nameError}
           helperText={errors.nameError && "Please fill this field correctly"}
           margin="dense"
           name="name"
           label="Name*"
           variant="outlined"
-          fullWidth
-          autoFocus
           onChange={handleChange}
-          defaultValue={name}
-          onBlur={() => formValidation(false)}
-          onFocus={clearErr}
+          defaultValue={values.name}
+          onBlur={() => formValidation(values.name, "nameError")}
+          onFocus={() => clearErr("nameError")}
         />
         <InputMask
-          mask="(999) 999-9999"
+          mask="+380 (999) 999-9999"
           maskChar=" "
-          defaultValue={phone}
+          beforeMaskedValueChange="+380"
+          defaultValue={values.phone}
           onChange={handleChange}
-          onBlur={() => formValidation(false)}
-          onFocus={clearErr}
+          onBlur={() => formValidation(values.phone, "phoneError")}
+          onFocus={() => clearErr("phoneError")}
         >
           {() => (
             <TextField
@@ -102,13 +109,13 @@ function ContactForm({
               label="Phone number*"
               variant="outlined"
               fullWidth
-              defaultValue={phone}
+              defaultValue={values.phone}
             />
           )}
         </InputMask>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" onClick={onClose}>
+        <Button color="secondary" onClick={handleClose}>
           Cancel
         </Button>
         <Button color="primary" onClick={handleSubmit} type="submit">

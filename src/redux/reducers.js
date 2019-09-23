@@ -1,30 +1,18 @@
-function getData() {
-  return [
-    {
-      id: 37683,
-      name: "Taylor",
-      phone: "+16783450"
-    },
-    {
-      id: 376856783,
-      name: "Ann",
-      phone: "+167835450"
-    }
-  ];
-}
+import {db} from "../firebase.js"
+
+const contacts = db.collection("contacts");
 
 const initialState = {
-  data: getData(),
   isDialogOpen: false,
   isEditing: false,
   isDeleteAlert: false,
   deleteItemId: null,
   editingValues: { id: null, name: "", phone: "" }
 };
-// Find our item
 
 const toggleItem = (state, action) => {
   const { isDialogOpen, isEditing, isDeleteAlert } = state;
+
   if (!isDialogOpen && (isDeleteAlert || isEditing)) {
     state.isEditing = false;
     state.isDeleteAlert = false;
@@ -46,25 +34,26 @@ const toggleItem = (state, action) => {
 };
 
 const addItem = (state, contact) => {
-  console.log(contact);
-  return { ...state, isDialogOpen: !state.isDialogOpen };
+  contacts.add({
+    name: contact.name,
+    phone: contact.phone
+  });
+  return { ...state, isDialogOpen: !state.isDialogOpen};
 };
 
-const editItem = (state, contact) => {
-  console.log(contact);
-  return { ...state, isDialogOpen: !state.isDialogOpen };
+const editItem = (state, {id, name, phone}) => {
+  contacts.doc(id).set({name, phone})
+  return { ...state, isDialogOpen: !state.isDialogOpen};
 };
 
 const deleteItem = (state) => {
-  console.log(state.deleteItemId);
-  return { ...state, isDialogOpen: !state.isDialogOpen };
+  contacts.doc(state.deleteItemId).delete();
+  return { ...state, isDialogOpen: !state.isDialogOpen, deleteItemId: null};
 };
 
+
 export const reducer = (state = initialState, action) => {
-  console.log(action, state);
   switch (action.type) {
-    case "GET_CONTACTS":
-      return state.data;
     case "ADD_CONTACT":
       return addItem(state, action.payload);
     case "EDIT_CONTACT":

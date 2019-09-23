@@ -5,11 +5,11 @@ import { toggleDialog } from "../redux/actions.js";
 
 function Header({ toggleDialog }) {
   return (
-    <Grid container justify="space-between" alignItems="center">
-      <Grid item xl={8}>
+    <Grid container justify="center" alignItems="center" direction="column" spacing={3}>
+      <Grid item>
         <h1 className="contacts_title">Contacts List</h1>
       </Grid>
-      <Grid item container justify="flex-end" xl sm={5}>
+      <Grid item >
         <Button variant="contained" color="primary" onClick={toggleDialog}>
           Add new contact
         </Button>

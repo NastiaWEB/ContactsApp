@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { StylesProvider } from "@material-ui/styles";
 import { Container } from "@material-ui/core";
 
-import ContactsList from "./contacts-list.js";
+import ContactsList from "./contacts-list";
 import ContactForm from "./contact-form";
 import Header from "./header.js";
 
